@@ -1,7 +1,11 @@
-import React from "react";
-import assets, { imagesDummyData } from "../assets/assets";
+import React, { useContext } from "react";
+import assets from "../assets/assets";
+import { AuthContext } from "../../context/AuthContext";
+import { ChatContext } from "../../context/ChatContext";
 
-const UserChatDetails = ({ selectedUser, setSelectedUser }) => {
+const UserChatDetails = () => {
+  const {} = useContext(AuthContext);
+  const {} = useContext(ChatContext);
   return (
     selectedUser && (
       <div

@@ -1,4 +1,4 @@
-import User from "../modals/users";
+import User from "../modals/users.js";
 import jwt from 'jsonwebtoken'
 
 export const protectRoute = async (req, res, next) => {
@@ -8,14 +8,14 @@ export const protectRoute = async (req, res, next) => {
         const user = await User.findById(decoded.userId).select('-password');
 
         if (!user) {
-            res.json({ success: false, message: 'User not found.' });
+            res.status(404).json({ success: false, message: 'User not found.' });
 
         }
         req.user = user;
         next();
     }
     catch (error) {
-        res.json({ success: false, message: error.message });
-        console.log("Error: ", error.message);
+        res.status(500).json({ success: false, message: error.message });
+        console.log("Auth Error: ", error.message);
     }
 }

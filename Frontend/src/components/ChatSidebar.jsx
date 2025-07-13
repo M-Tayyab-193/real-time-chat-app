@@ -1,10 +1,32 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import assets from "../assets/assets";
 import { useNavigate } from "react-router-dom";
-import { userDummyData } from "../assets/assets";
+import { AuthContext } from "../../context/AuthContext";
+import { ChatContext } from "../../context/ChatContext";
 
-const ChatSidebar = ({ selectedUser, setSelectedUser }) => {
+const ChatSidebar = () => {
   const navigate = useNavigate();
+  const { logout, onlineUsers } = useContext(AuthContext);
+  const {
+    users,
+    getUsers,
+    selectedUser,
+    setSelectedUser,
+    unseenMessages,
+    setUnseenMessages,
+  } = useContext(ChatContext);
+
+  const [input, setInput] = useState(false);
+
+  const filteredUsers = input
+    ? users.filter((user) =>
+        user.fullName.toLowerCase().includes(input.toLowerCase())
+      )
+    : users;
+
+  useEffect(() => {
+    getUsers();
+  }, [onlineUsers]);
 
   return (
     <div
@@ -29,7 +51,9 @@ const ChatSidebar = ({ selectedUser, setSelectedUser }) => {
                 Edit Profile
               </p>
               <hr className="border-t border-t-gray-500 my-2 " />
-              <p className="cursor-pointer text-sm">Logout</p>
+              <p className="cursor-pointer text-sm" onClick={() => logout()}>
+                Logout
+              </p>
             </div>
           </div>
         </div>
@@ -39,14 +63,22 @@ const ChatSidebar = ({ selectedUser, setSelectedUser }) => {
             type="text"
             className="border-none outline-none text-white text-xs bg-transparent placeholder-[#c8c8c8] flex-1"
             placeholder="Search User..."
+            onChange={(e) => setInput(e.target.value)}
           />
         </div>
       </div>
       <div className="flex flex-col">
-        {userDummyData.map((user, i) => (
+        {filteredUsers.map((user, i) => (
           <div
             key={i}
-            onClick={() => setSelectedUser(user)}
+            onClick={() => {
+              if (selectedUser === null) {
+                setSelectedUser(user);
+                setUnseenMessages((prev) => ({ ...prev, [user._id]: 0 }));
+              } else {
+                setSelectedUser(null);
+              }
+            }}
             className={`relative flex items-center gap-2 p-2 pl-4 rounded-md cursor-pointer max-sm:text-sm ${
               selectedUser?._id === user._id && "bg-[#282142]/50"
             }`}
@@ -58,15 +90,15 @@ const ChatSidebar = ({ selectedUser, setSelectedUser }) => {
             />
             <div className="flex flex-col leading-5">
               <p>{user.fullName}</p>
-              {i < 3 ? (
+              {onlineUsers.includes(user._id) ? (
                 <span className="text-green-400 text-xs">Online</span>
               ) : (
                 <span className="text-neutral-400 text-xs">Offline</span>
               )}
             </div>
-            {i > 2 && (
+            {unseenMessages[user._id] > 0 && (
               <p className="absolute top-4 right-4 h-5 w-5 text-xs flex justify-center items-center rounded-full bg-violet-500/50">
-                {i}
+                {unseenMessages[user._id]}
               </p>
             )}
           </div>
