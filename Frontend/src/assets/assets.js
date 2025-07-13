@@ -9,7 +9,6 @@ import send_button from './send_button.svg'
 import menu_icon from './menu_icon.png'
 import arrow_icon from './arrow_icon.png'
 import code from './code.svg'
-import bgImage from './bgImage.svg'
 
 
 const assets = {
@@ -23,8 +22,7 @@ const assets = {
     send_button,
     menu_icon,
     arrow_icon,
-    code,
-    bgImage
+    code
 }
 
 export default assets;
