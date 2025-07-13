@@ -1,11 +1,22 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import assets from "../assets/assets";
 import { AuthContext } from "../../context/AuthContext";
 import { ChatContext } from "../../context/ChatContext";
 
 const UserChatDetails = () => {
-  const {} = useContext(AuthContext);
-  const {} = useContext(ChatContext);
+  const { logout, onlineUsers } = useContext(AuthContext);
+  const { selectedUser, messages } = useContext(ChatContext);
+
+  const [msgImages, setMsgImages] = useState([]);
+
+  useEffect(() => {
+    setMsgImages(
+      messages
+        .filter((message) => message.image)
+        .map((message) => message.image)
+    );
+  }, [messages]);
+
   return (
     selectedUser && (
       <div
@@ -20,7 +31,10 @@ const UserChatDetails = () => {
             className="w-20 asepect-[1/1] rounded-full"
           />
           <h1 className="px-10 text-xl font-medium mx-auto flex items-center gap-2">
-            <p className="bg-green-500 w-2 h-2 rounded-full"></p>
+            {onlineUsers.includes(selectedUser._id) && (
+              <p className="bg-green-500 w-2 h-2 rounded-full"></p>
+            )}
+
             {selectedUser.fullName}
           </h1>
           <p className="mx-auto px-10 font-light">{selectedUser.bio}</p>
@@ -29,7 +43,7 @@ const UserChatDetails = () => {
         <div className="px-5 text-xs">
           <p className="text-sm font-medium">Media</p>
           <div className="mt-2 max-h-[290px] overflow-y-scroll grid grid-cols-2 gap-4 opacity-80">
-            {imagesDummyData.map((img, i) => (
+            {msgImages.map((img, i) => (
               <div
                 key={i}
                 onClick={() => window.open(img)}
@@ -40,7 +54,10 @@ const UserChatDetails = () => {
             ))}
           </div>
         </div>
-        <button className="absolute bottom-5 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-purple-400 to-violet-600 text-white border-none text-sm px-20 py-2 rounded-full cursor-pointer font-medium ">
+        <button
+          onClick={logout}
+          className="absolute bottom-5 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-purple-400 to-violet-600 text-white border-none text-sm px-20 py-2 rounded-full cursor-pointer font-medium "
+        >
           Logout
         </button>
       </div>
